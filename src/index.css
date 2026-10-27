@@ -67,20 +67,100 @@
   font-family: var(--font-arabic);
 }
 
-/* Hero Background Flora (decorative, sits behind the card) */
-.ambient-flora {
+/* Hero Animated Flower Field (decorative, sits behind the card) */
+.hero-flower-field {
   position: absolute;
+  inset: 0;
   z-index: 1;
+  overflow: hidden;
 }
 
-.flora-left {
-  left: 2%;
-  bottom: 4%;
+.hero-meadow {
+  position: absolute;
+  left: -3%;
+  right: -3%;
+  bottom: 0;
+  height: 46%;
+  min-height: 220px;
+  translate: calc(var(--parallax-x, 0px) * -0.4) 0;
+  transition: translate 0.3s ease-out;
 }
 
-.flora-right {
-  right: 2%;
-  top: 4%;
+.hero-branch {
+  position: absolute;
+  top: -10px;
+  width: clamp(220px, 32vw, 460px);
+  aspect-ratio: 420 / 260;
+  opacity: 0.9;
+  transition: translate 0.3s ease-out;
+}
+
+.hero-branch-left {
+  left: -20px;
+  translate: calc(var(--parallax-x, 0px) * 0.6) calc(var(--parallax-y, 0px) * 0.6);
+}
+
+.hero-branch-right {
+  right: -20px;
+  translate: calc(var(--parallax-x, 0px) * -0.6) calc(var(--parallax-y, 0px) * 0.6);
+  transform: scaleX(-1);
+}
+
+.hero-sway,
+.hero-grass-sway,
+.hero-branch-sway,
+.hero-blossom-breathe {
+  transform-box: fill-box;
+}
+
+.hero-sway {
+  transform-origin: 50% 100%;
+  animation: heroSway 5s ease-in-out infinite alternate;
+}
+
+.hero-branch-sway {
+  transform-origin: 0% 0%;
+  animation: heroBranchSway 7s ease-in-out infinite alternate;
+}
+
+.hero-blossom-breathe {
+  transform-origin: 50% 50%;
+  animation: heroBreathe 4.5s ease-in-out infinite alternate;
+}
+
+.hero-grass-sway {
+  transform-origin: 50% 100%;
+  animation: heroGrassSway 6s ease-in-out infinite alternate;
+}
+
+@keyframes heroGrassSway {
+  from { transform: skewX(-2deg); }
+  to { transform: skewX(2deg); }
+}
+
+@keyframes heroSway {
+  from { transform: rotate(-3.5deg); }
+  to { transform: rotate(3.5deg); }
+}
+
+@keyframes heroBranchSway {
+  from { transform: rotate(-1.5deg); }
+  to { transform: rotate(2deg); }
+}
+
+@keyframes heroBreathe {
+  from { transform: scale(0.94) rotate(-4deg); }
+  to { transform: scale(1.04) rotate(4deg); }
+}
+
+@media (max-width: 640px) {
+  .hero-meadow {
+    height: 34%;
+    min-height: 180px;
+  }
+  .hero-branch {
+    opacity: 0.75;
+  }
 }
 
 /* 3D Perspective Stage */
