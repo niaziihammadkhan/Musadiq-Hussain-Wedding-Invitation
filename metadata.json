@@ -2,5 +2,7 @@
   "name": "Luxury Royal Wedding Invitation - Mussadiq & D/o Saleem Satti",
   "description": "Interactive royal wedding invitation for Mussadiq Hussain & D/o Saleem Satti hosted by Mr. & Mrs. Sadaqat Hussain in Islamabad with 3D folding card, schedule, venue directions, and RSVP.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

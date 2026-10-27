@@ -16,57 +16,17 @@ import {
   MessageCircle,
   Check,
   Copy,
-  Heart,
-  Sparkles,
   ChevronDown,
-  Download,
-  Code2,
-  Clock,
-  Send,
-  X
+  Download
 } from 'lucide-react';
 import { weddingAudio } from './utils/audio';
-import { WEDDING_EVENTS, createGoogleCalendarUrl, downloadIcsFile, WeddingEventInfo } from './utils/calendar';
-import { STANDALONE_HTML } from './data/standaloneFiles';
-
-interface GuestWish {
-  id: string;
-  name: string;
-  relation: string;
-  message: string;
-  timestamp: string;
-}
-
-const INITIAL_WISHES: GuestWish[] = [
-  {
-    id: '1',
-    name: 'Chaudhry & Family',
-    relation: 'Family Friend',
-    message: 'May Allah SWT bless this union with boundless love, peace, and prosperity. Looking forward to celebrating with Sadaqat Hussain Sahib and family!',
-    timestamp: '2 hours ago'
-  },
-  {
-    id: '2',
-    name: 'Tariq Mehmood',
-    relation: 'Islamabad',
-    message: 'Heartiest congratulations to Mussadiq and his bride. Baraka Allahu Lakuma wa Baraka Alaikuma wa Jama’a Bainakuma Fee Khair.',
-    timestamp: 'Yesterday'
-  },
-  {
-    id: '3',
-    name: 'Malik Haroon Satti',
-    relation: 'Relative',
-    message: 'MashAllah, warm congratulations to both families. May the celebrations at White Pearl Marquee bring lasting bliss!',
-    timestamp: '2 days ago'
-  }
-];
+import { WEDDING_EVENTS, createGoogleCalendarUrl, downloadIcsFile } from './utils/calendar';
 
 export default function App() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState(false);
-  const [showCodeModal, setShowCodeModal] = useState(false);
   const [petals, setPetals] = useState<Array<{ id: number; left: number; duration: number; delay: number; endX: number }>>([]);
   const [parallax, setParallax] = useState({ x: 0, y: 0 });
 
@@ -77,26 +37,6 @@ export default function App() {
     minutes: 0,
     seconds: 0
   });
-
-  // Interactive RSVP submission
-  const [rsvpSubmitted, setRsvpSubmitted] = useState(false);
-  const [rsvpForm, setRsvpForm] = useState({
-    name: '',
-    guestsCount: '2',
-    attendingMehndi: true,
-    attendingBarat: true,
-    attendingWalima: true,
-    note: ''
-  });
-
-  // Wishes state
-  const [wishes, setWishes] = useState<GuestWish[]>(INITIAL_WISHES);
-  const [wishForm, setWishForm] = useState({ name: '', relation: '', message: '' });
-  const [wishSubmitted, setWishSubmitted] = useState(false);
-
-  // Active Code Modal Tab
-  const [codeTab, setCodeTab] = useState<'html' | 'css' | 'js'>('html');
-  const [copiedCode, setCopiedCode] = useState(false);
 
   const heroRef = useRef<HTMLDivElement>(null);
   const programmeRef = useRef<HTMLDivElement>(null);
@@ -191,64 +131,6 @@ export default function App() {
     setTimeout(() => setCopiedAddress(false), 2500);
   };
 
-  // Submit RSVP
-  const handleRsvpSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!rsvpForm.name.trim()) return;
-    setRsvpSubmitted(true);
-    if (rsvpForm.note.trim()) {
-      setWishes(prev => [
-        {
-          id: Date.now().toString(),
-          name: rsvpForm.name,
-          relation: 'Attending Guest',
-          message: rsvpForm.note,
-          timestamp: 'Just now'
-        },
-        ...prev
-      ]);
-    }
-  };
-
-  // Submit Blessing Wish
-  const handleWishSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!wishForm.name.trim() || !wishForm.message.trim()) return;
-    setWishes(prev => [
-      {
-        id: Date.now().toString(),
-        name: wishForm.name,
-        relation: wishForm.relation.trim() || 'Well-Wisher',
-        message: wishForm.message,
-        timestamp: 'Just now'
-      },
-      ...prev
-    ]);
-    setWishForm({ name: '', relation: '', message: '' });
-    setWishSubmitted(true);
-    setTimeout(() => setWishSubmitted(false), 4000);
-  };
-
-  // Copy code from standalone modal
-  const handleCopyStandaloneCode = () => {
-    navigator.clipboard.writeText(STANDALONE_HTML);
-    setCopiedCode(true);
-    setTimeout(() => setCopiedCode(false), 2000);
-  };
-
-  // Download standalone HTML package
-  const handleDownloadStandaloneHtml = () => {
-    const blob = new Blob([STANDALONE_HTML], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'index.html';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
   const scrollToProgramme = () => {
     programmeRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -304,16 +186,6 @@ export default function App() {
         >
           {copiedLink ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4" />}
           <span className="hidden sm:inline">{copiedLink ? 'Copied' : 'Share'}</span>
-        </button>
-
-        <button
-          onClick={() => setShowCodeModal(true)}
-          className="flex items-center gap-1.5 px-3 py-2 bg-[#164C3B] border border-[#C9A66B] rounded-full text-[#FFF9EF] font-ui text-xs uppercase tracking-wider shadow-md hover:bg-[#0E352A] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C9A66B]"
-          title="View & Export Standalone HTML/CSS for Netlify"
-          aria-label="Export Netlify bundle"
-        >
-          <Code2 className="w-4 h-4 text-[#C9A66B]" />
-          <span className="hidden md:inline">Netlify Bundle</span>
         </button>
       </aside>
 
@@ -429,7 +301,7 @@ export default function App() {
                       White Pearl Marquee • Islamabad
                     </p>
                     <p className="font-heading text-sm sm:text-base text-[#5E584F] italic mt-0.5">
-                      20 – 22 November 2026
+                      22nd November
                     </p>
                   </div>
 
@@ -853,7 +725,7 @@ export default function App() {
         </section>
 
         {/* ========================================================
-            SECTION 4: RSVP SECTION & INTERACTIVE GUEST CONFIRMATION
+            SECTION 4: RSVP SECTION
             ======================================================== */}
         <section className="py-20 md:py-28 px-4 bg-[#FFF9EF]" id="rsvp">
           <div className="max-w-5xl mx-auto">
@@ -878,12 +750,12 @@ export default function App() {
                   <span className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-[#C9A66B] to-transparent"></span>
                 </div>
                 <p className="text-base sm:text-lg italic text-[#5E584F] max-w-lg mx-auto">
-                  Please contact our family coordinators for inquiries, seating, and arrangements
+                  Please contact our family coordinators for inquiries and arrangements
                 </p>
               </div>
 
               {/* 3 Family Contact Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 
                 {/* Contact 1: Muqaddas Hussain */}
                 <div className="text-center p-6 rounded-lg bg-[#FFF9EF] border border-dashed border-[#C9A66B]/50 flex flex-col items-center hover:border-solid hover:border-[#C9A66B] transition-all">
@@ -951,124 +823,6 @@ export default function App() {
 
               </div>
 
-              {/* Online Quick RSVP Confirmation Box */}
-              <div className="border-t border-[#C9A66B]/30 pt-8 max-w-xl mx-auto">
-                <h4 className="text-center font-heading text-2xl font-semibold text-[#164C3B] mb-2">
-                  Confirm Your Attendance Online
-                </h4>
-                <p className="text-center text-sm italic text-[#5E584F] mb-6">
-                  Let the hosts know your party size and attending functions
-                </p>
-
-                {rsvpSubmitted ? (
-                  <div className="bg-[#164C3B]/10 border border-[#C9A66B] rounded-lg p-6 text-center">
-                    <div className="w-12 h-12 bg-[#164C3B] text-[#FFF9EF] rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Check className="w-6 h-6 text-[#E3CA98]" />
-                    </div>
-                    <h5 className="font-heading text-xl font-semibold text-[#164C3B]">Thank You, {rsvpForm.name}!</h5>
-                    <p className="text-sm italic text-[#5E584F] mt-1">
-                      Your RSVP for {rsvpForm.guestsCount} guests has been recorded. Mr. &amp; Mrs. Sadaqat Hussain look forward to welcoming you!
-                    </p>
-                    <button
-                      onClick={() => setRsvpSubmitted(false)}
-                      className="mt-4 font-ui text-xs underline text-[#A98548] hover:text-[#164C3B]"
-                    >
-                      Update response
-                    </button>
-                  </div>
-                ) : (
-                  <form onSubmit={handleRsvpSubmit} className="space-y-4">
-                    <div>
-                      <label className="block font-ui text-xs uppercase tracking-wider text-[#5E584F] mb-1">
-                        Your Full Name / Family Name
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={rsvpForm.name}
-                        onChange={e => setRsvpForm({ ...rsvpForm, name: e.target.value })}
-                        placeholder="e.g. Mr. & Mrs. Tariq Abbasi"
-                        className="w-full px-4 py-2.5 rounded-lg border border-[#C9A66B]/50 bg-white text-sm focus:outline-none focus:border-[#164C3B]"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block font-ui text-xs uppercase tracking-wider text-[#5E584F] mb-1">
-                          Number of Guests
-                        </label>
-                        <select
-                          value={rsvpForm.guestsCount}
-                          onChange={e => setRsvpForm({ ...rsvpForm, guestsCount: e.target.value })}
-                          className="w-full px-4 py-2.5 rounded-lg border border-[#C9A66B]/50 bg-white text-sm focus:outline-none focus:border-[#164C3B]"
-                        >
-                          <option value="1">1 Guest</option>
-                          <option value="2">2 Guests (Couple)</option>
-                          <option value="3">3 Guests</option>
-                          <option value="4">4 Guests</option>
-                          <option value="5+">5+ Guests (With Family)</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block font-ui text-xs uppercase tracking-wider text-[#5E584F] mb-1">
-                          Events Attending
-                        </label>
-                        <div className="flex items-center gap-3 pt-2 text-xs font-ui">
-                          <label className="flex items-center gap-1.5 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={rsvpForm.attendingMehndi}
-                              onChange={e => setRsvpForm({ ...rsvpForm, attendingMehndi: e.target.checked })}
-                              className="accent-[#164C3B]"
-                            />
-                            <span>Mehndi</span>
-                          </label>
-                          <label className="flex items-center gap-1.5 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={rsvpForm.attendingBarat}
-                              onChange={e => setRsvpForm({ ...rsvpForm, attendingBarat: e.target.checked })}
-                              className="accent-[#164C3B]"
-                            />
-                            <span>Barat</span>
-                          </label>
-                          <label className="flex items-center gap-1.5 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={rsvpForm.attendingWalima}
-                              onChange={e => setRsvpForm({ ...rsvpForm, attendingWalima: e.target.checked })}
-                              className="accent-[#164C3B]"
-                            />
-                            <span>Walima</span>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block font-ui text-xs uppercase tracking-wider text-[#5E584F] mb-1">
-                        Dua / Message for the Couple (Optional)
-                      </label>
-                      <input
-                        type="text"
-                        value={rsvpForm.note}
-                        onChange={e => setRsvpForm({ ...rsvpForm, note: e.target.value })}
-                        placeholder="Send warm blessings to Mussadiq & his bride..."
-                        className="w-full px-4 py-2.5 rounded-lg border border-[#C9A66B]/50 bg-white text-sm focus:outline-none focus:border-[#164C3B]"
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="w-full py-3 bg-[#164C3B] hover:bg-[#0E352A] text-[#FFF9EF] font-ui text-xs font-semibold uppercase tracking-widest rounded-lg border border-[#C9A66B] transition-colors shadow-md"
-                    >
-                      Confirm Attendance
-                    </button>
-                  </form>
-                )}
-              </div>
-
             </div>
 
           </div>
@@ -1108,95 +862,13 @@ export default function App() {
               </p>
             </div>
 
-            <div className="pt-6 border-t border-[#C9A66B]/30 max-w-2xl mx-auto mb-14">
+            <div className="pt-6 border-t border-[#C9A66B]/30 max-w-2xl mx-auto">
               <p className="font-arabic text-2xl sm:text-3xl text-[#164C3B] tracking-wide mb-3" dir="rtl">
                 بَارَكَ اللَّهُ لَكَ وَبَارَكَ عَلَيْكَ وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ
               </p>
               <p className="text-base sm:text-lg italic text-[#5E584F] max-w-lg mx-auto">
                 “May Allah bless you, shower His blessings upon you, and unite you both in goodness.”
               </p>
-            </div>
-
-            {/* Guest Wishes & Prayers Wall */}
-            <div className="border border-[#C9A66B]/40 rounded-xl p-6 sm:p-8 bg-[#FFFCF7] text-left">
-              <div className="flex items-center justify-between gap-4 mb-6 pb-3 border-b border-[#C9A66B]/20">
-                <div className="flex items-center gap-2">
-                  <Heart className="w-5 h-5 text-[#C9A66B] fill-current" />
-                  <h3 className="font-heading text-2xl font-semibold text-[#164C3B]">
-                    Blessings &amp; Well-Wishes
-                  </h3>
-                </div>
-                <span className="font-ui text-xs text-[#A8B5A0] tracking-wider uppercase">
-                  {wishes.length} Prayers Shared
-                </span>
-              </div>
-
-              {/* Add Wish Form */}
-              <form onSubmit={handleWishSubmit} className="mb-8 p-4 bg-[#FFF9EF] rounded-lg border border-[#C9A66B]/30">
-                <p className="font-heading text-base italic text-[#5E584F] mb-3">
-                  Leave a heartfelt prayer or congratulatory note for the newlyweds:
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                  <input
-                    type="text"
-                    required
-                    value={wishForm.name}
-                    onChange={e => setWishForm({ ...wishForm, name: e.target.value })}
-                    placeholder="Your Name"
-                    className="px-3.5 py-2 text-xs rounded border border-[#C9A66B]/40 bg-white focus:outline-none focus:border-[#164C3B]"
-                  />
-                  <input
-                    type="text"
-                    value={wishForm.relation}
-                    onChange={e => setWishForm({ ...wishForm, relation: e.target.value })}
-                    placeholder="Relation / City (e.g. Islamabad, Cousin)"
-                    className="px-3.5 py-2 text-xs rounded border border-[#C9A66B]/40 bg-white focus:outline-none focus:border-[#164C3B]"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    required
-                    value={wishForm.message}
-                    onChange={e => setWishForm({ ...wishForm, message: e.target.value })}
-                    placeholder="Write your prayers and blessing..."
-                    className="flex-1 px-3.5 py-2 text-xs rounded border border-[#C9A66B]/40 bg-white focus:outline-none focus:border-[#164C3B]"
-                  />
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-[#164C3B] hover:bg-[#0E352A] text-[#FFF9EF] rounded text-xs font-ui uppercase tracking-wider flex items-center gap-1.5 transition-colors"
-                  >
-                    <Send className="w-3.5 h-3.5" />
-                    <span>Send</span>
-                  </button>
-                </div>
-                {wishSubmitted && (
-                  <p className="font-ui text-xs text-emerald-700 mt-2 flex items-center gap-1">
-                    <Check className="w-3.5 h-3.5" />
-                    <span>Your warm blessing has been added to the guestbook!</span>
-                  </p>
-                )}
-              </form>
-
-              {/* Wishes List */}
-              <div className="space-y-4">
-                {wishes.map(wish => (
-                  <div key={wish.id} className="p-4 rounded-lg bg-white border border-[#C9A66B]/20 shadow-xs">
-                    <div className="flex items-center justify-between gap-2 mb-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className="font-heading font-semibold text-lg text-[#164C3B]">{wish.name}</span>
-                        <span className="font-ui text-[11px] text-[#A8B5A0] uppercase tracking-wider">
-                          · {wish.relation}
-                        </span>
-                      </div>
-                      <span className="font-ui text-[10px] text-[#A8B5A0]">{wish.timestamp}</span>
-                    </div>
-                    <p className="text-sm italic text-[#5E584F] leading-relaxed">
-                      “{wish.message}”
-                    </p>
-                  </div>
-                ))}
-              </div>
             </div>
 
           </div>
@@ -1219,72 +891,6 @@ export default function App() {
           </p>
         </div>
       </footer>
-
-      {/* ========================================================
-          STANDALONE CODE MODAL (NETLIFY EXPORT VIEWER)
-          ======================================================== */}
-      {showCodeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-[#FFFCF7] border border-[#C9A66B] rounded-xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-scale-fade-in">
-            {/* Modal Header */}
-            <div className="px-6 py-4 bg-[#164C3B] text-[#FFF9EF] flex items-center justify-between border-b border-[#C9A66B]">
-              <div className="flex items-center gap-2.5">
-                <Code2 className="w-5 h-5 text-[#C9A66B]" />
-                <div>
-                  <h3 className="font-heading text-xl font-semibold">Standalone Netlify Package</h3>
-                  <p className="font-ui text-[10px] text-[#E3CA98] uppercase tracking-wider">
-                    Zero-Build · Pure HTML/CSS/JS Ready for Deployment
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setShowCodeModal(false)}
-                className="p-1 hover:bg-[#0E352A] rounded text-[#FFF9EF]"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Modal Actions */}
-            <div className="px-6 py-3 bg-[#FFF9EF] border-b border-[#C9A66B]/30 flex flex-wrap items-center justify-between gap-3">
-              <span className="font-ui text-xs text-[#5E584F]">
-                Contains embedded vector SVG artwork, 3D physics, and all wedding event details.
-              </span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleCopyStandaloneCode}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#FFF9EF] border border-[#C9A66B] rounded-md font-ui text-xs font-medium text-[#164C3B] hover:bg-[#164C3B] hover:text-[#FFF9EF] transition-colors"
-                >
-                  {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copiedCode ? 'Copied' : 'Copy HTML'}</span>
-                </button>
-                <button
-                  onClick={handleDownloadStandaloneHtml}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#164C3B] text-[#FFF9EF] border border-[#C9A66B] rounded-md font-ui text-xs font-medium hover:bg-[#0E352A] transition-colors"
-                >
-                  <Download className="w-3.5 h-3.5 text-[#E3CA98]" />
-                  <span>Download index.html</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Code Preview */}
-            <div className="p-4 overflow-y-auto flex-1 font-mono text-xs bg-[#1E1E1E] text-[#D4D4D4] leading-relaxed">
-              <pre className="whitespace-pre-wrap">{STANDALONE_HTML}</pre>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="px-6 py-3 bg-[#FFF9EF] border-t border-[#C9A66B]/30 flex justify-end">
-              <button
-                onClick={() => setShowCodeModal(false)}
-                className="px-4 py-1.5 bg-[#164C3B] text-[#FFF9EF] rounded text-xs font-ui font-medium uppercase tracking-wider"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
