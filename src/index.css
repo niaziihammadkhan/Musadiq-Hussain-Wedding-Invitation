@@ -67,6 +67,22 @@
   font-family: var(--font-arabic);
 }
 
+/* Hero Background Flora (decorative, sits behind the card) */
+.ambient-flora {
+  position: absolute;
+  z-index: 1;
+}
+
+.flora-left {
+  left: 2%;
+  bottom: 4%;
+}
+
+.flora-right {
+  right: 2%;
+  top: 4%;
+}
+
 /* 3D Perspective Stage */
 .invitation-3d-wrapper {
   perspective: 1600px;
