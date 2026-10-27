@@ -20,6 +20,7 @@ import {
   Download
 } from 'lucide-react';
 import { weddingAudio } from './utils/audio';
+import HeroFlowerField from './components/HeroFlowerField';
 import { WEDDING_EVENTS, createGoogleCalendarUrl, downloadIcsFile } from './utils/calendar';
 
 export default function App() {
@@ -28,7 +29,6 @@ export default function App() {
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState(false);
   const [petals, setPetals] = useState<Array<{ id: number; left: number; duration: number; delay: number; endX: number }>>([]);
-  const [parallax, setParallax] = useState({ x: 0, y: 0 });
 
   // Countdown timer state
   const [timeLeft, setTimeLeft] = useState({
@@ -72,7 +72,9 @@ export default function App() {
       if (window.innerWidth < 1024) return;
       const x = (e.clientX / window.innerWidth - 0.5) * 20;
       const y = (e.clientY / window.innerHeight - 0.5) * 20;
-      setParallax({ x, y });
+      // Write to CSS variables instead of state so mouse movement doesn't re-render the page
+      heroRef.current?.style.setProperty('--parallax-x', `${x}px`);
+      heroRef.current?.style.setProperty('--parallax-y', `${y}px`);
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
@@ -196,30 +198,8 @@ export default function App() {
         ref={heroRef}
         className="min-h-screen relative flex flex-col items-center justify-center px-4 py-16 overflow-hidden bg-[radial-gradient(circle_at_50%_40%,#FFFDF8_0%,#FFF9EF_70%,#F5ECDD_100%)]"
       >
-        {/* Parallax Botanical Ambient Graphics */}
-        <div
-          className="ambient-flora flora-left pointer-events-none transition-transform duration-300 ease-out hidden lg:block"
-          style={{ transform: `translate(${parallax.x}px, ${parallax.y}px) rotate(-10deg)` }}
-          aria-hidden="true"
-        >
-          <svg viewBox="0 0 200 300" className="w-64 h-96 opacity-40">
-            <path d="M20,280 C60,200 30,120 110,60 C130,45 150,70 125,95 C95,125 140,165 95,220 C80,240 50,270 20,280 Z" fill="#A8B5A0" />
-            <path d="M125,95 C145,80 180,90 170,115 C155,145 120,135 125,95 Z" fill="#E9CFC8" />
-            <path d="M100,160 C125,145 150,170 135,190 C110,210 90,185 100,160 Z" fill="#E9CFC8" />
-          </svg>
-        </div>
-
-        <div
-          className="ambient-flora flora-right pointer-events-none transition-transform duration-300 ease-out hidden lg:block"
-          style={{ transform: `translate(${-parallax.x}px, ${-parallax.y}px) scaleX(-1) rotate(-10deg)` }}
-          aria-hidden="true"
-        >
-          <svg viewBox="0 0 200 300" className="w-64 h-96 opacity-40">
-            <path d="M180,280 C140,200 170,120 90,60 C70,45 50,70 75,95 C105,125 60,165 105,220 C120,240 150,270 180,280 Z" fill="#A8B5A0" />
-            <path d="M75,95 C55,80 20,90 30,115 C45,145 80,135 75,95 Z" fill="#E9CFC8" />
-            <path d="M100,160 C75,145 50,170 65,190 C90,210 110,185 100,160 Z" fill="#E9CFC8" />
-          </svg>
-        </div>
+        {/* Animated Botanical Backdrop (behind the card) */}
+        <HeroFlowerField />
 
         {/* 3D Gatefold Card Container */}
         <div className="invitation-3d-wrapper">
